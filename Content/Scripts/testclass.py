@@ -64,8 +64,6 @@ class SampleAssistant(object):
             return True
         return False
 
-    #@retry(reraise=True, stop=stop_after_attempt(3),
-    #       retry=retry_if_exception(is_grpc_error_unavailable))
     def converse(self):
         """Send a voice request to the Assistant and playback the response.
 
@@ -88,22 +86,22 @@ class SampleAssistant(object):
                                             self.deadline):
             assistant_helpers.log_converse_response_without_audio(resp)
             if resp.error.code != code_pb2.OK:
-                ue.log_error('server error: %s', resp.error.message)
+                ue.log_error('server error: ' + str(resp.error.message))
                 break
             if resp.event_type == END_OF_UTTERANCE:
                 ue.log('End of audio request detected')
                 self.conversation_stream.stop_recording()
             if resp.result.spoken_request_text:
-                ue.log('Transcript of user request: "%s".',
-                             resp.result.spoken_request_text)
+                ue.log('Transcript of user request: ' +
+                             str(resp.result.spoken_request_text))
                 ue.log('Playing assistant response.')
             if len(resp.audio_out.audio_data) > 0:
                 self.conversation_stream.write(resp.audio_out.audio_data)
             if resp.result.spoken_response_text:
                 ue.log(
                     'Transcript of TTS response '
-                    '(only populated from IFTTT): "%s".',
-                    resp.result.spnoken_response_text)
+                    '(only populated from IFTTT): ' +
+                    str(resp.result.spnoken_response_text))
             if resp.result.conversation_state:
                 self.conversation_state = resp.result.conversation_state
             if resp.result.volume_percentage != 0:
@@ -149,7 +147,6 @@ class SampleAssistant(object):
             yield embedded_assistant_pb2.ConverseRequest(audio_in=data)
 
 class Hero:
-
     # this is called on game start
     def begin_play(self):
         """Samples for the Google Assistant API.
@@ -178,12 +175,72 @@ class Hero:
             creds = auth_helpers.load_credentials(
                 credentials, scopes=[common_settings.ASSISTANT_OAUTH_SCOPE]
             )
-        except Exception as e:
-            #logging.error('Error loading credentials: %s', e)
-            #logging.error('Run auth_helpers to initialize new OAuth2 credentials.')
-            ue.log_error('Error loading credentials: ' + str(e))
-            ue.log_error('Run auth_helpers to initialize new OAuth2 credentials.')
-            return
+        except Exception:
+            # Maybe we didn't load the credentials yet?
+            # This could happen on first run
+            creds = auth_helpers.credentials_flow_interactive(credentials, common_settings.ASSISTANT_OAUTH_SCOPE)
+            auth_helpers.save_credentials(credentials, creds)
+            try:
+                creds = auth_helpers.load_credentials(
+                    credentials, scopes=[common_settings.ASSISTANT_OAUTH_SCOPE]
+                )
+            except Exception as e:
+                ue.log_error('Error loading credentials: ' + str(e))
+                ue.log_error('Run auth_helpers to initialize new OAuth2 credentials.')
+                return
+
+        ue.log('Begin play done!')
+
+        # Define endpoint
+        # This might where you can inject custom API.AI behaviors?
+        api_endpoint = ASSISTANT_API_ENDPOINT
+
+        # Create an authorized gRPC channel.
+        grpc_channel = auth_helpers.create_grpc_channel(
+            api_endpoint, creds
+        )
+        ue.log('Connecting to '+ str(api_endpoint))
+
+        # Set up audio parameters
+        audio_sample_rate = common_settings.DEFAULT_AUDIO_SAMPLE_RATE
+        audio_sample_width = common_settings.DEFAULT_AUDIO_SAMPLE_WIDTH
+        audio_iter_size = common_settings.DEFAULT_AUDIO_ITER_SIZE
+        audio_block_size = common_settings.DEFAULT_AUDIO_DEVICE_BLOCK_SIZE
+        audio_flush_size = common_settings.DEFAULT_AUDIO_DEVICE_FLUSH_SIZE
+
+        # Configure audio source and sink.
+        audio_device = None
+        audio_source = audio_device = (
+            audio_device or audio_helpers.SoundDeviceStream(
+                sample_rate=audio_sample_rate,
+                sample_width=audio_sample_width,
+                block_size=audio_block_size,
+                flush_size=audio_flush_size
+            )
+        )
+
+        audio_sink = audio_device = (
+            audio_device or audio_helpers.SoundDeviceStream(
+                sample_rate=audio_sample_rate,
+                sample_width=audio_sample_width,
+                block_size=audio_block_size,
+                flush_size=audio_flush_size
+            )
+        )
+        # Create conversation stream with the given audio source and sink.
+        conversation_stream = audio_helpers.ConversationStream(
+            source=audio_source,
+            sink=audio_sink,
+            iter_size=audio_iter_size,
+            sample_width=audio_sample_width,
+        )
+
+        ue.log('Audio device: ' +str(audio_device))
+
+        self.assistant = SampleAssistant(conversation_stream,
+                                         grpc_channel,
+                                         common_settings.DEFAULT_GRPC_DEADLINE)
+        self.assistant.converse()
 
     # this is called at every 'tick'
     def tick(self, delta_time):

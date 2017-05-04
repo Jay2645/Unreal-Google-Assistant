@@ -549,3 +549,7 @@ OTHER_FILES += \
 	"$$UE4GoogleAssistantRootPath/Source/UE4GoogleAssistant/UE4GoogleAssistant.Build.cs" \
  
 
+DISTFILES += \
+    $$PWD/Content/Scripts/googlesamples.py \
+    $$PWD/Content/Scripts/testclass.py
+

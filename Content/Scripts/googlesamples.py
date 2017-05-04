@@ -302,6 +302,7 @@ class Hero:
             sample_width=audio_sample_width,
         )
 
+    def tick(self, delta_time):
         with SampleAssistant(conversation_stream,
                              grpc_channel, grpc_deadline) as assistant:
             # If file arguments are supplied:
@@ -313,11 +314,11 @@ class Hero:
             # If no file arguments supplied:
             # keep recording voice requests using the microphone
             # and playing back assistant response using the speaker.
-            wait_for_user_trigger = True
-            while True:
-                if wait_for_user_trigger:
-                    click.pause(info='Press Enter to send a new request...')
+#            wait_for_user_trigger = True
+#            while True:
+#                if wait_for_user_trigger:
+#                    click.pause(info='Press Enter to send a new request...')
                 continue_conversation = assistant.converse()
                 # wait for user trigger if there is no follow-up turn in
                 # the conversation.
-                wait_for_user_trigger = not continue_conversation
+#                wait_for_user_trigger = not continue_conversation
