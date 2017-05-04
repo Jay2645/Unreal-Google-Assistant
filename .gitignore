@@ -109,3 +109,5 @@ Saved
 *.suo
 *.xcodeproj
 *.xcworkspace
+*.pro.user
+*.autosave

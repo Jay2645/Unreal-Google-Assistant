@@ -26,6 +26,8 @@ I'm still working on this bit. There are a couple steps needed to get it working
 
 2. You need to follow the [Google Assistant Raspberry Pi setup instructions](https://developers.google.com/assistant/sdk/prototype/getting-started-pi-python/config-dev-project-and-account) to install Google Assistant via Python and make sure everything is working properly. Mostly, you need to play around with the Cloud Platform Console and get Google OAuth working. Don't bother making a virtual environment; you want pip to install the Google Assistant dependencies into your Python 3 directory, as we need to access them in Unreal. Mainly, we need to be able to access grpc, which for me installed to '~/.local/lib/python3.5/site-packages'. I haven't tested this in Windows yet, so I don't know where it gets installed to in Windows.
 
+3. Place the client secret JSON file in `Content/Scripts/assistant_credentials.json`. When the project first loads, it'll find this file and open a web browser, where you can give your Google Assistant project access to your Google account.
+
 ## Using the Project
 
 Once that is done, you should be able to see the Python scripts inside the `Content/Scripts` folder. Right now, there's only a test class, helpfully named `testclass.py`. There should already be a Blueprint set up in the `Content` directory called `TestPyActor`. This is a normal PyActor class (found in the UnrealEnginePython project), with a Python Module `testclass` and a Python Class `Hero`.
@@ -38,8 +40,12 @@ Bear in mind that at the moment, it uses your **system's** microphone and speake
 
 * Use the `uobject.play_sound_at_location()` class to play sound rather than directly out of the computer's speakers.
 
+* (Tangentally related): Create a helper class which converts from Python structures (like the wave module) into Unreal structures (a USoundWave or a  USoundWaveProcedural).
+
 * Move microphone input onto a separate thread to stop it locking the game thread waiting for input
 
 * Allow activation of the Google Assistant by pressing a button
 
 * Expose common functions to Blueprint, allowing Blueprint access to the Google Assistant
+
+Feel free to fork and submit pull requests as needed, if there's any functionality you want to add. This is still very early in development, so there's a lot to do still before it's ready for prime-time.
