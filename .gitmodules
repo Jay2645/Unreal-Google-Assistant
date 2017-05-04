@@ -1,0 +1,3 @@
+[submodule "Plugins/UnrealEnginePython"]
+	path = Plugins/UnrealEnginePython
+	url = git@github.com:20tab/UnrealEnginePython.git
