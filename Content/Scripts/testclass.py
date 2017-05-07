@@ -8,8 +8,11 @@ import unreal_engine as ue
 import sys
 
 sys.path.append('~/.local/lib/python3.5/site-packages')
+sys.path.append('C:\\Program Files\\Python35\\Lib\\site-packages')
+print(sys.path)
+
 import grpc
-from google.assistant.embedded.v1alpha1 import embedded_assistant_pb2
+from googlesdk.assistant.embedded.v1alpha1 import embedded_assistant_pb2
 from google.rpc import code_pb2
 #from tenacity import retry, stop_after_attempt, retry_if_exception
 from googlesamples.assistant import (
@@ -208,23 +211,32 @@ class Hero:
         audio_block_size = common_settings.DEFAULT_AUDIO_DEVICE_BLOCK_SIZE
         audio_flush_size = common_settings.DEFAULT_AUDIO_DEVICE_FLUSH_SIZE
 
+        # Set up Unreal Audio Component
+        self.audio_component = self.uobject.get_component_by_type('AudioComponent')
+        self.procedural_audio_wave = self.uobject.create_uobject(ue.find_class('SoundWaveProcedural'))
+        self.audio_component.SetSound(self.procedural_audio_wave)
+
         # Configure audio source and sink.
         audio_device = None
         audio_source = audio_device = (
-            audio_device or audio_helpers.SoundDeviceStream(
+            audio_device or audio_helpers.UnrealSoundStream(
                 sample_rate=audio_sample_rate,
                 sample_width=audio_sample_width,
                 block_size=audio_block_size,
-                flush_size=audio_flush_size
+                flush_size=audio_flush_size,
+                audio_uobject = self.uobject,
+                procedural_audio_wave=self.procedural_audio_wave
             )
         )
 
         audio_sink = audio_device = (
-            audio_device or audio_helpers.SoundDeviceStream(
+            audio_device or audio_helpers.UnrealSoundStream(
                 sample_rate=audio_sample_rate,
                 sample_width=audio_sample_width,
                 block_size=audio_block_size,
-                flush_size=audio_flush_size
+                flush_size=audio_flush_size,
+                audio_uobject = self.uobject,
+                procedural_audio_wave=self.procedural_audio_wave
             )
         )
         # Create conversation stream with the given audio source and sink.

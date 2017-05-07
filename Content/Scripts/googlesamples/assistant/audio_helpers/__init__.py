@@ -23,6 +23,8 @@ import array
 
 import sounddevice as sd
 
+import unreal_engine as ue
+
 
 def normalize_audio_buffer(buf, volume_percentage, sample_width=2):
     """Adjusts the loudness of the audio data in the given buffer.
@@ -74,8 +76,8 @@ class WaveSource(object):
         try:
             self._wavep = wave.open(self._fp, 'r')
         except wave.Error as e:
-            logging.warning('error opening WAV file: %s, '
-                            'falling back to RAW format', e)
+            ue.log_warning('error opening WAV file: ' + str(e) +
+                            ' falling back to RAW format')
             self._fp.seek(0)
             self._wavep = None
         self._sample_rate = sample_rate
@@ -156,6 +158,87 @@ class WaveSink(object):
 
     def stop(self):
         pass
+
+class UnrealSoundStream(object):
+    """ Audio stream that uses the Unreal Engine's functions to play audio.
+
+    Args:
+      sample_rate: sample rate in hertz.
+      sample_width: size of a single sample in bytes.
+      block_size: size in bytes of each read and write operation.
+      flush_size: size in bytes of silence data written during flush operation.
+      audio_component: where the audio for the sound wave will be played from during a write.
+    """
+    def __init__(self, sample_rate, sample_width, block_size, flush_size, audio_uobject, procedural_audio_wave):
+
+        self.ue_procedural_audio_wave = procedural_audio_wave
+        self.ue_procedural_audio_wave.SampleRate = sample_rate
+        self.ue_procedural_audio_wave.NumChannels = 1
+        self.ue_procedural_audio_wave.Duration = 10000.0
+        self.ue_procedural_audio_wave.SoundGroup = 4
+        self.ue_procedural_audio_wave.bLooping = False
+
+        self.audio_uobject = audio_uobject
+
+        if sample_width == 2:
+            audio_format = 'int16'
+        else:
+            raise Exception('unsupported sample width:', sample_width)
+        self._system_audio_stream = sd.RawStream(
+            samplerate=sample_rate, dtype=audio_format, channels=1,
+            blocksize=int(block_size/2),  # blocksize is in number of frames.
+        )
+        self._block_size = block_size
+        self._flush_size = flush_size
+        self._sample_rate = sample_rate
+
+    def read(self, size):
+        """Read bytes from the stream. Used to record audio."""
+        buf, overflow = self._system_audio_stream.read(size)
+        if overflow:
+            logging.warning('SoundDeviceStream read overflow (%d, %d)',
+                            size, len(buf))
+        return bytes(buf)
+
+    def write(self, buf):
+        """Write bytes to the stream. Used to play audio."""
+
+        #underflow = self._system_audio_stream.write(buf)
+        #if underflow:
+        #    ue.log_warning('SoundDeviceStream write underflow (size: ' + str(len(buf)) + ')')
+        ue.log(str(type(buf)))
+        ue.log(str(len(buf)))
+        try:
+            self.audio_uobject.write_audio_to_buffer(self.ue_procedural_audio_wave, buf)
+        except Exception as err:
+            ue.log_error("Could not write audio to buffer! Error: "+str(err))
+        return len(buf)
+
+    def flush(self):
+        if self._flush_size > 0:
+            self._system_audio_stream.write(b'\x00' * self._flush_size)
+
+    def start(self):
+        """Start the underlying stream."""
+        if not self._system_audio_stream.active:
+            self._system_audio_stream.start()
+
+    def stop(self):
+        """Stop the underlying stream."""
+        if self._system_audio_stream.active:
+            self.flush()
+            self._system_audio_stream.stop()
+
+    def close(self):
+        """Close the underlying stream and audio interface."""
+        if self._system_audio_stream:
+            self.stop()
+            self._system_audio_stream.close()
+            self._system_audio_stream = None
+
+    @property
+    def sample_rate(self):
+        return self._sample_rate
 
 
 class SoundDeviceStream(object):

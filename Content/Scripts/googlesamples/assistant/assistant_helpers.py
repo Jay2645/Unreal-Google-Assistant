@@ -15,6 +15,7 @@
 """Helper functions for the Google Assistant API."""
 
 import logging
+import unreal_engine as ue
 
 from google.assistant.embedded.v1alpha1 import embedded_assistant_pb2
 
@@ -30,10 +31,9 @@ def log_converse_request_without_audio(converse_request):
         if len(resp_copy.audio_in) > 0:
             size = len(resp_copy.audio_in)
             resp_copy.ClearField('audio_in')
-            logging.debug('ConverseRequest: audio_in (%d bytes)',
-                          size)
+            ue.log('ConverseRequest: audio_in (' + str(size) + ' bytes)')
             return
-        logging.debug('ConverseRequest: %s', resp_copy)
+        ue.log('ConverseRequest: ' + str(resp_copy))
 
 
 def log_converse_response_without_audio(converse_response):

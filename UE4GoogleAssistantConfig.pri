@@ -551,5 +551,32 @@ OTHER_FILES += \
 
 DISTFILES += \
     $$PWD/Content/Scripts/googlesamples.py \
-    $$PWD/Content/Scripts/testclass.py
+    $$PWD/Content/Scripts/testclass.py \
+    $$PWD/Content/Scripts/googlesamples/assistant/audio_helpers/__init__.py \
+    $$PWD/Content/Scripts/googlesamples/assistant/audio_helpers/__main__.py \
+    $$PWD/Content/Scripts/assistant_credentials.json \
+    $$PWD/Content/Scripts/__pycache__/testclass.cpython-35.pyc \
+    $$PWD/Content/Scripts/google/__pycache__/__init__.cpython-35.pyc \
+    $$PWD/Content/Scripts/google/assistant/__pycache__/__init__.cpython-35.pyc \
+    $$PWD/Content/Scripts/google/assistant/embedded/__pycache__/__init__.cpython-35.pyc \
+    $$PWD/Content/Scripts/google/assistant/embedded/v1alpha1/__pycache__/__init__.cpython-35.pyc \
+    $$PWD/Content/Scripts/google/assistant/embedded/v1alpha1/__pycache__/embedded_assistant_pb2.cpython-35.pyc \
+    $$PWD/Content/Scripts/googlesamples/__pycache__/__init__.cpython-35.pyc \
+    $$PWD/Content/Scripts/googlesamples/assistant/__pycache__/__init__.cpython-35.pyc \
+    $$PWD/Content/Scripts/googlesamples/assistant/__pycache__/assistant_helpers.cpython-35.pyc \
+    $$PWD/Content/Scripts/googlesamples/assistant/__pycache__/common_settings.cpython-35.pyc \
+    $$PWD/Content/Scripts/googlesamples/assistant/audio_helpers/__pycache__/__init__.cpython-35.pyc \
+    $$PWD/Content/Scripts/googlesamples/assistant/auth_helpers/__pycache__/__init__.cpython-35.pyc \
+    $$PWD/Content/Scripts/google/assistant/embedded/v1alpha1/__init__.py \
+    $$PWD/Content/Scripts/google/assistant/embedded/v1alpha1/embedded_assistant_pb2.py \
+    $$PWD/Content/Scripts/google/assistant/embedded/v1alpha1/embedded_assistant_pb2_grpc.py \
+    $$PWD/Content/Scripts/google/assistant/embedded/__init__.py \
+    $$PWD/Content/Scripts/google/assistant/__init__.py \
+    $$PWD/Content/Scripts/google/__init__.py \
+    $$PWD/Content/Scripts/googlesamples/assistant/auth_helpers/__init__.py \
+    $$PWD/Content/Scripts/googlesamples/assistant/auth_helpers/__main__.py \
+    $$PWD/Content/Scripts/googlesamples/assistant/__init__.py \
+    $$PWD/Content/Scripts/googlesamples/assistant/assistant_helpers.py \
+    $$PWD/Content/Scripts/googlesamples/assistant/common_settings.py \
+    $$PWD/Content/Scripts/googlesamples/__init__.py
 
