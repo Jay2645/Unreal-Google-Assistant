@@ -8,7 +8,6 @@ from unreal_engine.classes import SoundWaveProcedural
 
 from googlesdk.assistant.embedded.v1alpha1 import embedded_assistant_pb2
 from googlesamples.assistant import (
-	assistant_helpers,
 	audio_helpers,
 	auth_helpers,
 	common_settings
@@ -105,3 +104,4 @@ def setup_unreal_engine_audio(audio_component):
 	)
 	
 setup_assistant()
+# Audio will be set up at runtime

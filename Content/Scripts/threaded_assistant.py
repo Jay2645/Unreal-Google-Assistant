@@ -7,12 +7,7 @@ import ue_site
 
 # Google Assistant imports
 from googlesdk.assistant.embedded.v1alpha1 import embedded_assistant_pb2
-from googlesamples.assistant import (
-	assistant_helpers,
-	audio_helpers,
-	auth_helpers,
-	common_settings
-)
+from googlesamples.assistant import common_settings
 
 # General Google imports
 from google.rpc import code_pb2
