@@ -20,13 +20,13 @@ You can do anything that a Google Home can do, so as the functionality of things
 
 ## Getting Setup
 
-I'm still working on this bit. There are a couple steps needed to get it working:
+1. You need to have [Unreal Engine Python](https://github.com/20tab/UnrealEnginePython) installed and configured. It's included as a submodule in this repository, but it's always taken a bit of configuration to get set up. Since this is a full project, I would clone this project first and try to get Unreal Engine Python's example program working first (it's in their README).
 
-1. You need to have [Unreal Engine Python](https://github.com/20tab/UnrealEnginePython) installed and configured. It's included as a submodule in this repository, but it took some configuration for me to get it working properly, and I'm not sure whether these changes will work outside of my personal Ubuntu machine that I develop on. Since this is a full project, I would clone this project first and try to get Unreal Engine Python's example program working first (it's in their README).
+2. You need to follow the [Google Assistant Raspberry Pi setup instructions](https://developers.google.com/assistant/sdk/prototype/getting-started-pi-python/config-dev-project-and-account) to install Google Assistant via Python and make sure everything is working properly. Mostly, you need to play around with the Cloud Platform Console and get Google OAuth working. Don't bother making a virtual environment; you want pip to install the Google Assistant dependencies into your Python 3 directory, as we need to access them in Unreal.
 
-2. You need to follow the [Google Assistant Raspberry Pi setup instructions](https://developers.google.com/assistant/sdk/prototype/getting-started-pi-python/config-dev-project-and-account) to install Google Assistant via Python and make sure everything is working properly. Mostly, you need to play around with the Cloud Platform Console and get Google OAuth working. Don't bother making a virtual environment; you want pip to install the Google Assistant dependencies into your Python 3 directory, as we need to access them in Unreal. Mainly, we need to be able to access grpc, which for me installed to '~/.local/lib/python3.5/site-packages'. I haven't tested this in Windows yet, so I don't know where it gets installed to in Windows.
+3. Place the client secret JSON file in `Content/Scripts/client_secrets.json`. When the project first loads, it'll find this file and open a web browser, where you can give your Google Assistant project access to your Google account.
 
-3. Place the client secret JSON file in `Content/Scripts/assistant_credentials.json`. When the project first loads, it'll find this file and open a web browser, where you can give your Google Assistant project access to your Google account.
+4. Go into `Plugins/UnrealEnginePython/Source/UnrealEnginePython/Private/UnrealEnginePythonPrivatePCH.h`, uncomment `#define UEPY_THREADING 1`, and recompile the project. This enables the (experimental) multithreading support in UnrealEnginePython, which is needed or else we'd lock up the game thread whenever we activate our microphone.
 
 [Some best practices from Google when it comes to keeping these credentials safe](https://developers.google.com/assistant/sdk/best-practices/privacy-and-security):
 
@@ -44,11 +44,11 @@ The .gitignore in this project will automatically stop any files called `assista
 
 ## Using the Project
 
-Once that is done, you should be able to see the Python scripts inside the `Content/Scripts` folder. Right now, there's only a test class, helpfully named `testclass.py`. There should already be a Blueprint set up in the `Content` directory called `TestPyActor`. This is a normal PyActor class (found in the UnrealEnginePython project), with a Python Module `testclass` and a Python Class `Hero`.
+Once that is done, you should be able to see the Python scripts inside the `Content/Scripts` folder. Everything is ultimately controlled through our test class, helpfully named `testclass.py`. There should already be a Blueprint set up in the `Content` directory called `TestPyActor`. This is a normal PyActor class (found in the UnrealEnginePython project), with a Python Module `testclass` and a Python Class `Hero`. All it does is load our `testclass.py` file, which in turn activates the Google Assistant (and provides a place for the audio to output via the attached UAudioComponent).
 
-If everything goes right, your game ***should*** freeze for 5-6 seconds when you hit play. Your microphone is enabled while the game is frozen (there's no multithreading yet). If you talk during this time, it'll be sent to Google's servers and the Google Assistant will reply back to you. Try testing it with "Tell me a joke".
+There are currently 3 major Python files which make the magic happen (in addition to Google's code, which has been modified slightly). We've gone over `testclass.py`, but we also have `threaded_assistant.py`, which is a wrapper for the Google Assistant that lives on a separate thread from the rest of the game and handles all the actual communication with Google. Finally, we have `ue_site.py`, a "configuration" module expected by `UnrealEnginePython` that initializes Google's OAuth stuff and gets us all set up before `BeginPlay` even gets called.
 
-Bear in mind that at the moment, it uses your **system's** microphone and speakers -- NOT anything in Unreal.
+To activate the Google Assistant, hit the `Q` key on your keyboard and start talking. Anything you say will be sent to Google's servers and the Google Assistant will reply back to you. Try testing it with "Tell me a joke". You can use any command you can use on your Google Home -- if you have a Netflix account linked, you can cast Netflix to your TV from Unreal, or if you have smart lightbulbs in your home, you can turn them off via a voice command you send ***in the Unreal Engine itself.***
 
 ## To-Do
 
