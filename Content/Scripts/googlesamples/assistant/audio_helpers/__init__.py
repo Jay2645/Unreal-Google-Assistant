@@ -169,7 +169,7 @@ class UnrealSoundStream(object):
 	  flush_size: size in bytes of silence data written during flush operation.
 	  audio_component: where the audio for the sound wave will be played from during a write.
 	"""
-	def __init__(self, sample_rate, sample_width, block_size, flush_size, audio_uobject, procedural_audio_wave):
+	def __init__(self, sample_rate, sample_width, block_size, flush_size, procedural_audio_wave):
 
 		self.ue_procedural_audio_wave = procedural_audio_wave
 		self.ue_procedural_audio_wave.SampleRate = sample_rate
@@ -177,8 +177,6 @@ class UnrealSoundStream(object):
 		self.ue_procedural_audio_wave.Duration = 10000.0
 		self.ue_procedural_audio_wave.SoundGroup = 4
 		self.ue_procedural_audio_wave.bLooping = False
-
-		self.audio_uobject = audio_uobject
 
 		if sample_width == 2:
 			audio_format = 'int16'
