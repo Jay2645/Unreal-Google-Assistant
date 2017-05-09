@@ -31,17 +31,11 @@ I'm still working on this bit. There are a couple steps needed to get it working
 [Some best practices from Google when it comes to keeping these credentials safe](https://developers.google.com/assistant/sdk/best-practices/privacy-and-security):
 
 > Any application that uses the Google Assistant API must have authorization credentials that identify the application to Google's authentication server. Typically, these credentials are stored in a downloaded client_secrets.json file. Make sure to store this file in a location that only your application can access.
-
 > Your application may prompt the user to grant it access to their Google account. If granted, your application can request an access token for that user. These tokens expire, but can be refreshed.
-
 > Unprotected refresh tokens on a device pose a significant security risk. Make sure your application:
-
 > * Stores the refresh tokens in a secure place.
-
 > * Provides an easy way to clear tokens from the device. For example, provide a "Sign out" button that clears a token (if the application has a UI) or a command line script that the user can execute.
-
 > * Informs users that they can deauthorize access to their Google account. This revokes the refresh token; to use the application again, the user would need to re-authorize access.
-
 > When you are done using the device permanently, you should clear all of the tokens from it.
 
 The .gitignore in this project will automatically stop any files called `assistant_credentials.json` or `client_secrets.json` from being added to a Git project. Even so, take care not to add these files to any public GitHub project.
@@ -56,14 +50,8 @@ Bear in mind that at the moment, it uses your **system's** microphone and speake
 
 ## To-Do
 
-* Use the `uobject.play_sound_at_location()` class to play sound rather than directly out of the computer's speakers.
-
-* (Tangentally related): Create a helper class which converts from Python structures (like the wave module) into Unreal structures (a USoundWave or a  USoundWaveProcedural).
-
-* Move microphone input onto a separate thread to stop it locking the game thread waiting for input
-
-* Allow activation of the Google Assistant by pressing a button
-
 * Expose common functions to Blueprint, allowing Blueprint access to the Google Assistant
+
+* Integrate the Google Assistant with the game itself, allowing the game to take actions based on voice input.
 
 Feel free to fork and submit pull requests as needed, if there's any functionality you want to add. This is still very early in development, so there's a lot to do still before it's ready for prime-time.
