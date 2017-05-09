@@ -94,14 +94,15 @@ class SampleAssistant(threading.Thread):
 			if resp.result.spoken_request_text:
 				ue.log('Transcript of user request: ' +
 							 str(resp.result.spoken_request_text))
-				ue.log('Playing assistant response.')
 			if len(resp.audio_out.audio_data) > 0:
 				self.conversation_stream.write(resp.audio_out.audio_data)
+			else:
+				ue.log("Assistant had no audible response.")
 			if resp.result.spoken_response_text:
 				ue.log(
 					'Transcript of TTS response '
 					'(only populated from IFTTT): ' +
-					str(resp.result.spnoken_response_text))
+					str(resp.result.spoken_response_text))
 			if resp.result.conversation_state:
 				self.conversation_state = resp.result.conversation_state
 			if resp.result.volume_percentage != 0:
@@ -113,7 +114,7 @@ class SampleAssistant(threading.Thread):
 				ue.log('Expecting follow-on query from user.')
 			elif resp.result.microphone_mode == CLOSE_MICROPHONE:
 				continue_conversation = False
-		ue.log('Finished playing assistant response: ' + str(resp))
+		ue.log('Finished playing assistant response.')
 		self.conversation_stream.stop_playback()
 		return continue_conversation
 
@@ -145,6 +146,7 @@ class SampleAssistant(threading.Thread):
 		for data in self.conversation_stream:
 			# Subsequent requests need audio data, but not config.
 			yield embedded_assistant_pb2.ConverseRequest(audio_in=data)
+		self.conversation_stream.start_playback()
 
 class Hero:
 	# this is called on game start
