@@ -92,6 +92,7 @@ python35/
 python27/
 
 # Google Assistant JSON Client Secret
+Content/Scripts/client_secrets.json
 Content/Scripts/assistant_credentials.json
 
 # Generic UE4 stuff
