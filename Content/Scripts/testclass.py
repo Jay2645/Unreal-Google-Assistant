@@ -81,16 +81,16 @@ class SampleAssistant(threading.Thread):
 		ue.log('Recording audio request.')
 
 		def iter_converse_requests():
-			for c in self.gen_converse_requests():
+			for c in ():
 				assistant_helpers.log_converse_request_without_audio(c)
 				yield c
 			self.conversation_stream.start_playback()
 
 		# This generator yields ConverseResponse proto messages
 		# received from the gRPC Google Assistant API.
-		for resp in self.assistant.Converse(iter_converse_requests(),
+		for resp in self.assistant.Converse(self.gen_converse_requests(),
 											self.deadline):
-			assistant_helpers.log_converse_response_without_audio(resp)
+			#assistant_helpers.log_converse_response_without_audio(resp)
 			if resp.error.code != code_pb2.OK:
 				ue.log_error('server error: ' + str(resp.error.message))
 				break
@@ -119,7 +119,7 @@ class SampleAssistant(threading.Thread):
 				ue.log('Expecting follow-on query from user.')
 			elif resp.result.microphone_mode == CLOSE_MICROPHONE:
 				continue_conversation = False
-		ue.log('Finished playing assistant response.')
+		ue.log('Finished playing assistant response: ' + str(resp))
 		self.conversation_stream.stop_playback()
 		return continue_conversation
 
@@ -127,11 +127,11 @@ class SampleAssistant(threading.Thread):
 		"""Yields: ConverseRequest messages to send to the API."""
 		converse_state = None
 		if self.conversation_state:
-			ue.log('Sending converse_state: %s',
-						  self.conversation_state)
+			ue.log('Sending converse_state: '+ str(self.conversation_state))
 			converse_state = embedded_assistant_pb2.ConverseState(
 				conversation_state=self.conversation_state,
 			)
+		# Generate the config for the assistant
 		config = embedded_assistant_pb2.ConverseConfig(
 			audio_in_config=embedded_assistant_pb2.AudioInConfig(
 				encoding='LINEAR16',
@@ -147,6 +147,7 @@ class SampleAssistant(threading.Thread):
 		# The first ConverseRequest must contain the ConverseConfig
 		# and no audio data.
 		yield embedded_assistant_pb2.ConverseRequest(config=config)
+		# Below, we actually activate the microphone and begin recording.
 		for data in self.conversation_stream:
 			# Subsequent requests need audio data, but not config.
 			yield embedded_assistant_pb2.ConverseRequest(audio_in=data)
@@ -254,14 +255,9 @@ class Hero:
 		self.assistant = SampleAssistant(conversation_stream,
 										 grpc_channel,
 										 common_settings.DEFAULT_GRPC_DEADLINE)
-		#self.assistant.converse()
-		self.assistant.start()
 
 	# this is called at every 'tick'
 	def tick(self, delta_time):
-		# get current location
-		location = self.uobject.get_actor_location()
-		# increase Z honouring delta_time
-		location.z += 1000 * delta_time
-		# set new location
-		self.uobject.set_actor_location(location)
+		if self.uobject.is_input_key_down('Q') and not self.assistant.is_alive():
+			# Open the assistant up for input
+			self.assistant.start()

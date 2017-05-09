@@ -196,8 +196,7 @@ class UnrealSoundStream(object):
         """Read bytes from the stream. Used to record audio."""
         buf, overflow = self._system_audio_stream.read(size)
         if overflow:
-            logging.warning('SoundDeviceStream read overflow (%d, %d)',
-                            size, len(buf))
+            ue.log_warning('SoundDeviceStream read overflow (' + size + ', '+ str(len(buf)) + ')')
         return bytes(buf)
 
     def write(self, buf):
@@ -206,8 +205,6 @@ class UnrealSoundStream(object):
         #underflow = self._system_audio_stream.write(buf)
         #if underflow:
         #    ue.log_warning('SoundDeviceStream write underflow (size: ' + str(len(buf)) + ')')
-        ue.log(str(type(buf)))
-        ue.log(str(len(buf)))
         try:
             self.ue_procedural_audio_wave.queue_audio(buf)
         except Exception as err:
