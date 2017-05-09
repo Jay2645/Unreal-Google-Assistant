@@ -80,12 +80,6 @@ class SampleAssistant(threading.Thread):
 		self.conversation_stream.start_recording()
 		ue.log('Recording audio request.')
 
-		def iter_converse_requests():
-			for c in ():
-				assistant_helpers.log_converse_request_without_audio(c)
-				yield c
-			self.conversation_stream.start_playback()
-
 		# This generator yields ConverseResponse proto messages
 		# received from the gRPC Google Assistant API.
 		for resp in self.assistant.Converse(self.gen_converse_requests(),
@@ -252,12 +246,23 @@ class Hero:
 
 		ue.log('Audio device: ' +str(audio_device))
 
-		self.assistant = SampleAssistant(conversation_stream,
-										 grpc_channel,
-										 common_settings.DEFAULT_GRPC_DEADLINE)
+		self.conversation_stream = conversation_stream
+		self.grpc_channel = grpc_channel
+		self.grpc_deadline = common_settings.DEFAULT_GRPC_DEADLINE
 
 	# this is called at every 'tick'
 	def tick(self, delta_time):
-		if self.uobject.is_input_key_down('Q') and not self.assistant.is_alive():
-			# Open the assistant up for input
-			self.assistant.start()
+		if self.uobject.is_input_key_down('Q'):
+			try:
+				# Only try to start a new conversation if one is not active
+				if not self.assistant.is_alive():
+					self.assistant = SampleAssistant(self.conversation_stream,
+											self.grpc_channel,
+											self.grpc_deadline)
+					self.assistant.start()
+			except AttributeError:
+				# This happens the first time we attempt to start a conversation
+				self.assistant = SampleAssistant(self.conversation_stream,
+											self.grpc_channel,
+											self.grpc_deadline)
+				self.assistant.start()
