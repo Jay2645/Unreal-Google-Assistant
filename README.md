@@ -31,11 +31,13 @@ I'm still working on this bit. There are a couple steps needed to get it working
 [Some best practices from Google when it comes to keeping these credentials safe](https://developers.google.com/assistant/sdk/best-practices/privacy-and-security):
 
 > Any application that uses the Google Assistant API must have authorization credentials that identify the application to Google's authentication server. Typically, these credentials are stored in a downloaded client_secrets.json file. Make sure to store this file in a location that only your application can access.
+
 > Your application may prompt the user to grant it access to their Google account. If granted, your application can request an access token for that user. These tokens expire, but can be refreshed.
 > Unprotected refresh tokens on a device pose a significant security risk. Make sure your application:
 > * Stores the refresh tokens in a secure place.
 > * Provides an easy way to clear tokens from the device. For example, provide a "Sign out" button that clears a token (if the application has a UI) or a command line script that the user can execute.
 > * Informs users that they can deauthorize access to their Google account. This revokes the refresh token; to use the application again, the user would need to re-authorize access.
+
 > When you are done using the device permanently, you should clear all of the tokens from it.
 
 The .gitignore in this project will automatically stop any files called `assistant_credentials.json` or `client_secrets.json` from being added to a Git project. Even so, take care not to add these files to any public GitHub project.
