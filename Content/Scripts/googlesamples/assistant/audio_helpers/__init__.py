@@ -209,7 +209,7 @@ class UnrealSoundStream(object):
         ue.log(str(type(buf)))
         ue.log(str(len(buf)))
         try:
-            self.audio_uobject.write_audio_to_buffer(self.ue_procedural_audio_wave, buf)
+            self.ue_procedural_audio_wave.queue_audio(buf)
         except Exception as err:
             ue.log_error("Could not write audio to buffer! Error: "+str(err))
         return len(buf)
