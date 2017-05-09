@@ -46,7 +46,13 @@ The .gitignore in this project will automatically stop any files called `assista
 
 Once that is done, you should be able to see the Python scripts inside the `Content/Scripts` folder. Everything is ultimately controlled through our test class, helpfully named `testclass.py`. There should already be a Blueprint set up in the `Content` directory called `TestPyActor`. This is a normal PyActor class (found in the UnrealEnginePython project), with a Python Module `testclass` and a Python Class `Hero`. All it does is load our `testclass.py` file, which in turn activates the Google Assistant (and provides a place for the audio to output via the attached UAudioComponent).
 
-There are currently 3 major Python files which make the magic happen (in addition to Google's code, which has been modified slightly). We've gone over `testclass.py`, but we also have `threaded_assistant.py`, which is a wrapper for the Google Assistant that lives on a separate thread from the rest of the game and handles all the actual communication with Google. Finally, we have `ue_site.py`, a "configuration" module expected by `UnrealEnginePython` that initializes Google's OAuth stuff and gets us all set up before `BeginPlay` even gets called.
+There are currently 3 major Python files which make the magic happen (in addition to Google's code, which has been modified slightly):
+
+* `testclass.py`: We've gone over this, but this is basically the Python representation of our ingame UE4 actor. This serves as the main "link" between Python and our UE4 level.
+
+* `threaded_assistant.py`: This is a wrapper for the Google Assistant that lives on a separate thread from the rest of the game and handles all the actual communication with Google. It handles both audio stuff (controlling recording and playback, turning the microphone on and off) as well as the actual communication with Google's servers that helps with the speech-to-text parsing and the Google Assistant responses. Any integration with Google Assistant will want to use this as a starting point.
+
+* `ue_site.py`: This is a "configuration" module expected by `UnrealEnginePython`. This initializes Google's OAuth stuff, helps with the client_secrets, and establishes an initial link to the Google Assistant API before `BeginPlay` ever gets called. Once `BeginPlay` is called, it also helps initialize the link to Unreal's audio system.
 
 To activate the Google Assistant, hit the `Q` key on your keyboard and start talking. Anything you say will be sent to Google's servers and the Google Assistant will reply back to you. Try testing it with "Tell me a joke". You can use any command you can use on your Google Home -- if you have a Netflix account linked, you can cast Netflix to your TV from Unreal, or if you have smart lightbulbs in your home, you can turn them off via a voice command you send ***in the Unreal Engine itself.***
 
