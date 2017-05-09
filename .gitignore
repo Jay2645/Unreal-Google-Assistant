@@ -98,6 +98,7 @@ Content/Scripts/assistant_credentials.json
 Binaries/
 DerivedDataCache
 Intermediate
+.kdev4/
 Build
 Debug
 Saved
@@ -111,3 +112,12 @@ Saved
 *.xcworkspace
 *.pro.user
 *.autosave
+*.pro
+*.kdev4
+*.workspace
+*CodeCompletionFolders.txt
+*CodeLitePreProcessor.txt
+*.pri
+.directory
+CMakeLists.txt
+Makefile
