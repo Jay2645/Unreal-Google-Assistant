@@ -26,7 +26,7 @@ def setup_assistant():
 	try:
 		global creds
 		creds = auth_helpers.load_credentials(
-			credentials, scopes=[common_settings.ASSISTANT_OAUTH_SCOPE]
+			credentials, scopes=[common_settings.ASSISTANT_OAUTH_SCOPE, common_settings.PUBSUB_OAUTH_SCOPE]
 		)
 	except Exception:
 		# Maybe we didn't load the credentials yet?
@@ -56,6 +56,10 @@ def setup_assistant():
 	
 	global assistant
 	assistant = embedded_assistant_pb2.EmbeddedAssistantStub(grpc_channel)
+	
+	global msg_queue
+	msg_queue = []
+	
 	return 0 # Initialized Google Assistant successfully
 			
 def setup_unreal_engine_audio(audio_component):

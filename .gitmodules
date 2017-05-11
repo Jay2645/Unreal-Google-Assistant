@@ -1,3 +1,6 @@
 [submodule "Plugins/UnrealEnginePython"]
 	path = Plugins/UnrealEnginePython
 	url = git@github.com:20tab/UnrealEnginePython.git
+[submodule "Content/Scripts/Unreal-Google-Assistant-API-AI"]
+	path = Content/Scripts/Unreal-Google-Assistant-API-AI
+	url = https://github.com/Jay2645/Unreal-Google-Assistant-API-AI
