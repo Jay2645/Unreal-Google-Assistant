@@ -2,6 +2,8 @@
 
 This is a full project which aims to integrate the [Google Assistant SDK](https://developers.google.com/assistant/sdk/) into Unreal Engine 4.
 
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
+
 ## Why would I want to use this?
 
 The idea is twofold: Players can either control things inside the game with their voice *or* things in the game could have an effect in "real life". Here's a couple examples:
